@@ -15,68 +15,120 @@ const getLogSpy = () => {
 };
 
 describe("Game 클래스 테스트", () => {
-  test("constructor: 참가자를 올바르게 초기화", () => {
+  test("constructor: 참가자를 올바르게 초기화해야 한다", () => {
     const game = new Game(["pobi", "woni"], "5");
     expect(game.participants).toEqual({ pobi: "", woni: "" });
   });
 
-  describe("racing: 레이싱 로직 테스트", () => {
-    test("랜덤 숫자가 4 이상일 때 전진", async () => {
+  describe("자동차 전진 로직 (_moveCars)", () => {
+    test("랜덤 숫자가 4 이상일 때 전진해야 한다", () => {
+      // given
       mockRandoms([4, 3]);
-      const logSpy = getLogSpy();
       const game = new Game(["pobi", "woni"], "1");
 
-      await game.racing();
+      // when
+      game._moveCars();
 
+      // then
       expect(game.participants.pobi).toBe("-");
       expect(game.participants.woni).toBe("");
-      expect(logSpy).toHaveBeenCalledWith("pobi : -");
-      expect(logSpy).toHaveBeenCalledWith("woni : ");
+    });
+
+    test("랜덤 숫자가 4 미만일 때 멈춰야 한다", () => {
+      // given
+      mockRandoms([0, 9]);
+      const game = new Game(["pobi", "woni"], "1");
+
+      // when
+      game._moveCars();
+
+      // then
+      expect(game.participants.pobi).toBe("");
+      expect(game.participants.woni).toBe("-");
     });
   });
 
-  describe("result: 최종 우승자 발표 테스트", () => {
-    test("단독 우승자가 있을 경우 올바르게 출력", async () => {
-      const logSpy = getLogSpy();
+  describe("우승자 계산 로직 (_getWinners)", () => {
+    test("단독 우승자가 있을 경우 해당 우승자만 배열로 반환해야 한다", () => {
+      // given
       const game = new Game(["pobi", "woni"], "1");
       game.participants = { pobi: "--", woni: "-" };
 
-      await game.result();
+      // when
+      const winners = game._getWinners();
 
-      expect(logSpy).toHaveBeenCalledWith("최종 우승자 : pobi");
+      // then
+      expect(winners).toEqual(["pobi"]);
     });
 
-    test("공동 우승자가 있을 경우 쉼표로 구분하여 모두 출력", async () => {
+    test("공동 우승자가 있을 경우 모든 우승자를 배열로 반환해야 한다", () => {
+      // given
+      const game = new Game(["pobi", "woni", "jun"], "1");
+      game.participants = { pobi: "--", woni: "-", jun: "--" };
+
+      // when
+      const winners = game._getWinners();
+
+      // then
+      expect(winners).toEqual(["pobi", "jun"]);
+    });
+
+    test("아무도 전진하지 않았을 경우 빈 배열을 반환해야 한다", () => {
+      // given
+      const game = new Game(["pobi", "woni"], "1");
+      game.participants = { pobi: "", woni: "" };
+
+      // when
+      const winners = game._getWinners();
+
+      // then
+      expect(winners).toEqual([]);
+    });
+  });
+
+  describe("우승자 출력 (printWinners)", () => {
+    test("계산된 우승자들을 형식에 맞게 올바르게 출력해야 한다", () => {
+      // given
       const logSpy = getLogSpy();
       const game = new Game(["pobi", "woni", "jun"], "1");
       game.participants = { pobi: "--", woni: "-", jun: "--" };
 
-      await game.result();
+      // when
+      game.printWinners();
 
+      // then
       expect(logSpy).toHaveBeenCalledWith("최종 우승자 : pobi, jun");
-    });
-
-    test("모든 참가자가 전진하지 않았을 경우 모두 우승자로 출력", async () => {
-      const logSpy = getLogSpy();
-      const game = new Game(["pobi", "woni"], "1");
-      game.participants = { pobi: "", woni: "" };
-
-      await game.result();
-
-      expect(logSpy).toHaveBeenCalledWith("최종 우승자 : pobi, woni");
     });
   });
 
-  test("game: 전체 게임 흐름 테스트", async () => {
-    mockRandoms([9, 0, 8, 1]);
-    const logSpy = getLogSpy();
-    const game = new Game(["pobi", "woni"], "2");
+  describe("전체 게임 흐름 테스트 (play)", () => {
+    test("게임이 시작부터 끝까지 올바르게 동작하고 결과를 출력해야 한다", async () => {
+      // given
+      mockRandoms([9, 0, 8, 1]); // pobi: 전진, woni: 멈춤, pobi: 전진, woni: 멈춤
+      const logSpy = getLogSpy();
+      const game = new Game(["pobi", "woni"], "2");
 
-    await game.game();
+      // when
+      await game.play();
 
-    expect(game.participants).toEqual({ pobi: "--", woni: "" });
+      // then
+      const expectedFinalState = { pobi: "--", woni: "" };
+      expect(game.participants).toEqual(expectedFinalState);
 
-    await game.result();
-    expect(logSpy).toHaveBeenCalledWith("최종 우승자 : pobi");
+      const expectedLogs = [
+        "\n실행 결과",
+        "pobi : -",
+        "woni : ",
+        "",
+        "pobi : --",
+        "woni : ",
+        "",
+        "최종 우승자 : pobi",
+      ];
+
+      expectedLogs.forEach((log) => {
+        expect(logSpy).toHaveBeenCalledWith(log);
+      });
+    });
   });
 });
