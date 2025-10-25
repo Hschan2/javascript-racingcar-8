@@ -10,7 +10,7 @@ class Game {
         });
     }
 
-    async play() {
+    play() {
         MissionUtils.Console.print('\n실행 결과');
         for (let i = 0; i < this.tryCount; i++) {
             this._moveCars();
