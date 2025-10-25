@@ -12,10 +12,10 @@ class App {
     const tryCount = user.tryCountValue;
 
     const valid = new Valid(carNames, tryCount);
-    await valid.isValid();
+    valid.isValid();
 
     const game = new Game(carNames, tryCount);
-    await game.play();
+    game.play();
   }
 }
 
