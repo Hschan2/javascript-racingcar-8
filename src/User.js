@@ -1,4 +1,5 @@
 import { MissionUtils } from '@woowacourse/mission-utils'
+import { INPUT_MESSAGE } from './constant/message';
 
 class User {
     constructor() {
@@ -7,18 +8,18 @@ class User {
     }
 
     async inputCarName() {
-        this.carName = await MissionUtils.Console.readLineAsync("경주할 자동차 이름을 입력하세요.(이름은 쉼표(,) 기준으로 구분)");
+        this.carName = await MissionUtils.Console.readLineAsync(INPUT_MESSAGE.INPUT_CAR_NAME);
     }
 
     async inputTryCount() {
-        this.tryCount = await MissionUtils.Console.readLineAsync("시도할 횟수는 몇 회인가요?");
+        this.tryCount = await MissionUtils.Console.readLineAsync(INPUT_MESSAGE.INPUT_TRY_COUNT);
     }
 
-    get refinedName() {
+    getRefinedName() {
         return this.carName.split(',');
     }
 
-    get tryCountValue() {
+    getTryCountValue() {
         return this.tryCount;
     }
 }
