@@ -8,8 +8,8 @@ class App {
     await user.inputCarName();
     await user.inputTryCount();
 
-    const carNames = user.refinedName;
-    const tryCount = user.tryCountValue;
+    const carNames = user.getRefinedName();
+    const tryCount = user.getTryCountValue();
 
     const valid = new Valid(carNames, tryCount);
     valid.isValid();
