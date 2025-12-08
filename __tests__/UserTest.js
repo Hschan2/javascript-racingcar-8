@@ -26,12 +26,12 @@ describe("User 클래스 테스트", () => {
   test("refinedName: 입력받은 자동차 이름을 쉼표로 구분", () => {
     const user = new User();
     user.carName = "pobi,woni,jun";
-    expect(user.refinedName).toEqual(["pobi", "woni", "jun"]);
+    expect(user.getRefinedName()).toEqual(["pobi", "woni", "jun"]);
   });
 
   test("tryCountValue: 입력받은 시도 횟수 값을 그대로 반환", () => {
     const user = new User();
     user.tryCount = "5";
-    expect(user.tryCountValue).toBe("5");
+    expect(user.getTryCountValue()).toBe("5");
   });
 });
