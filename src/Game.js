@@ -1,4 +1,5 @@
 import { MissionUtils } from '@woowacourse/mission-utils';
+import { GAME_MESSAGE, WINNER_MESSAGE } from './constant/message';
 
 class Game {
     constructor(carName, tryCount) {
@@ -11,7 +12,7 @@ class Game {
     }
 
     play() {
-        MissionUtils.Console.print('\n실행 결과');
+        MissionUtils.Console.print(GAME_MESSAGE.RESULT_MESSAGE);
         for (let i = 0; i < this.tryCount; i++) {
             this._moveCars();
             this._printRoundStatus();
@@ -30,16 +31,15 @@ class Game {
     }
 
     _printRoundStatus() {
-        const names = Object.keys(this.participants);
-        names.forEach(name => {
-            MissionUtils.Console.print(`${name} : ${this.participants[name]}`);
-        });
+        for (const [name, track] of Object.entries(this.participants)) {
+            MissionUtils.Console.print(`${name} : ${track}`);
+        }
         MissionUtils.Console.print('');
     }
 
     printWinners() {
         const winners = this._getWinners();
-        MissionUtils.Console.print(`최종 우승자 : ${winners.join(', ')}`);
+        MissionUtils.Console.print(WINNER_MESSAGE(winners));
     }
 
     _getWinners() {
